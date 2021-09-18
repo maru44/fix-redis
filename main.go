@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -22,12 +23,13 @@ func main() {
 
 func simpleCache(c *redis.Client) {
 	key := "foo"
-	err := c.Set(key, "bar", 0).Err()
+	ctx := context.Background()
+	err := c.Set(ctx, key, "bar", 0).Err()
 	if err != nil {
 		log.Println(err)
 	}
 
-	val, err := c.Get(key).Result()
+	val, err := c.Get(ctx, key).Result()
 	if err != nil {
 		log.Println(err)
 	}
