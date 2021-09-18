@@ -1,0 +1,33 @@
+version: "3"
+services:
+  web:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_ADDR=cache:6379
+      - REDIS_PASS=''
+    volumes:
+      - .:/go/src/app
+    ports:
+      - 8080:8080
+    tty: true
+    networks:
+      - net
+  
+  redis:
+    container_name: cache
+    image: redis:5.0.7-alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - ./tmp/cache:/data
+    restart: always
+    networks:
+      - net
+    command: redis-server
+  
+networks:
+  net:
+    driver: bridge
