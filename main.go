@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -19,19 +19,32 @@ func main() {
 	})
 
 	simpleCache(client)
+	successSismember(client)
 }
 
 func simpleCache(c *redis.Client) {
 	key := "foo"
-	ctx := context.Background()
-	err := c.Set(ctx, key, "bar", 0).Err()
+	err := c.Set(key, "bar", 0).Err()
 	if err != nil {
 		log.Println(err)
 	}
 
-	val, err := c.Get(ctx, key).Result()
+	val, err := c.Get(key).Result()
 	if err != nil {
 		log.Println(err)
 	}
 	fmt.Println(val)
+}
+
+func successSismember(c *redis.Client) {
+	key := "foofoo"
+	jsonStr := `{"filename": "r7iPc2eE4KNzfXHaKJUkbfPGoXaruE.json", "user": "77xxx"}`
+	json_, err := json.Marshal(jsonStr)
+	if err != nil {
+		log.Println(err)
+	}
+	c.SAdd(key, jsonStr, json_)
+
+	fmt.Println(c.SIsMember(key, jsonStr))
+	fmt.Println(c.SIsMember(key, json_))
 }
